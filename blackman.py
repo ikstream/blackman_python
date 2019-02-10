@@ -7,8 +7,9 @@ Download and compile packages from BlackArch github repo
 ###############################################################################
 #
 #  Blackman - Emerge for BlackArch
-#  Copyright (C) 2019  Stefan Venz
+#
 #  Copyright (C) 2019  BlackArch Linux
+#  Copyright (C) 2019  Stefan Venz
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -146,17 +147,18 @@ def read_from_config():
         print("Could not read from {}".format(BLACKARCH_CONFIG))
 
 
-def write_to_config(option):
+def write_to_config(name, value):
     """
     Save variables to config file
 
     Arguments:
-        option(str) - write option to config file
+        name(str) - name of option
+        value(str) - write value to config file
     """
     ret = EXIT_SUCCESS
     try:
-        with open(BLACKARCH_CONFIG):
-            print("write {} to {} here".format(option, BLACKARCH_CONFIG))
+        with ope?!?jedi=3, n(BLACKARCH_CONFIG, 'w+'):?!? (*_*param value*_*, param ..., param sep, param end, param file, param flush) ?!?jedi?!?' '
+            print("write {} to {} here".format(value, BLACKARCH_CONFIG))
     except:
         print("Could not write to {}".format(BLACKARCH_CONFIG))
         ret = EXIT_FAILURE
@@ -243,7 +245,7 @@ def handle_args(args):
 
     print(args)
     if args['default']:
-        write_to_config(args['default'])
+        write_to_config('repo_path', args['default'])
 
 
 
