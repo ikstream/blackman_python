@@ -32,8 +32,9 @@ Download and compile packages from BlackArch github repo
 #
 ###############################################################################
 
-import subprocess
 import argparse
+import subprocess
+import sys
 
 from pathlib import Path
 
@@ -161,6 +162,7 @@ def parse_arguments():
         args(dict) - dict of command line options
     """
     global LOCAL_REPO
+
     ap = argparse.ArgumentParser()
 
     # package options
@@ -193,12 +195,13 @@ def parse_arguments():
     ap.add_argument("-p", "--packages", required=False,
                     help="list all packages from <group>",
                     metavar='<group>', nargs='+')
+
     args = vars(ap.parse_args())
 
-    if args["default"]:
-        LOCAL_REPO = args["default"]
+    if len(sys.argv) < 2:
+        ap.print_help()
+        sys.exit(1)
 
-    print(LOCAL_REPO)
     return args
 
 
