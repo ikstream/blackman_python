@@ -155,15 +155,31 @@ def write_to_config(name, value):
         name(str) - name of option
         value(str) - write value to config file
     """
-    ret = EXIT_SUCCESS
     try:
         with open(BLACKARCH_CONFIG):
             print("write {} to {} here".format(value, BLACKARCH_CONFIG))
     except:
         print("Could not write to {}".format(BLACKARCH_CONFIG))
-        ret = EXIT_FAILURE
+        return EXIT_FAILURE
 
-    return ret
+    return EXIT_SUCCESS
+
+
+def is_in_blackarch(pkg)
+    """
+    check if a given package is in BlackArch Repo
+
+    Arguments:
+        pkg(str) - package to check
+
+    Returns:
+        True if in BlackArch, False72 0000 else
+    """
+    output = subprocess.getoutput('pacman -Ss ' + pkg).split('/')
+    if output[0] == 'blackarch':
+        return True
+
+    return False
 
 
 def list_groups():
