@@ -157,7 +157,7 @@ def write_to_config(name, value):
     """
     ret = EXIT_SUCCESS
     try:
-        with ope?!?jedi=3, n(BLACKARCH_CONFIG, 'w+'):?!? (*_*param value*_*, param ..., param sep, param end, param file, param flush) ?!?jedi?!?' '
+        with open(BLACKARCH_CONFIG):
             print("write {} to {} here".format(value, BLACKARCH_CONFIG))
     except:
         print("Could not write to {}".format(BLACKARCH_CONFIG))
