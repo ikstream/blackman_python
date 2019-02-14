@@ -165,7 +165,7 @@ def write_to_config(name, value):
     return EXIT_SUCCESS
 
 
-def is_in_blackarch(pkg)
+def is_in_blackarch(pkg):
     """
     check if a given package is in BlackArch Repo
 
