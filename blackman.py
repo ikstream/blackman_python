@@ -34,6 +34,7 @@ Download and compile packages from BlackArch github repo
 ###############################################################################
 
 import argparse
+import configparser
 import os
 import subprocess
 import sys
@@ -44,8 +45,10 @@ VERSION = '0.1'
 
 HOME = str(Path.home())
 BLACKARCH_REPO = 'https://github.com/BlackArch/blackarch.git'
-BLACKARCH_CONFIG = HOME + '/.config/blackman/config'
-LOCAL_REPO = HOME + '/.config/blackman/repo/'
+BLACKARCH_HOME = HOME + '/.config/blackman/'
+BLACKARCH_CONFIG = BLACKARCH_HOME + '/config'
+
+LOCAL_REPO = BLACKARCH_HOME + '/repo'
 
 EXIT_SUCCESS = 0
 EXIT_FAILURE = 1
@@ -64,17 +67,14 @@ def check_config_dir():
     return:
         0 if exists, 1 else
     """
-    exit_no_check = 2
     try:
         if os.path.exists(BLACKARCH_CONFIG):
-            ret = EXIT_SUCCESS
+            return EXIT_SUCCESS
         else:
-            ret = EXIT_FAILURE
+            return  EXIT_FAILURE
     except:
         print("Could not check if {} exists".format(BLACKARCH_CONFIG))
-        ret = exit_no_check
-
-    return ret
+        return EXIT_FAILURE
 
 
 def create_config_dir():
@@ -85,18 +85,18 @@ def create_config_dir():
         0 ok, 1 else
     """
     file_does_exist = 0
-    ret = EXIT_SUCCESS
+
     if check_config_dir() > file_does_exist:
         try:
-            print("Create {}".format(BLACKARCH_CONFIG))
-            err = subprocess.run(['mkdir', '-p', BLACKARCH_CONFIG],
-                                 stderr=subpress.PIPE)
+            print("Create {}".format(BLACKARCH_HOME))
+            err = subprocess.run(['mkdir', '-p', BLACKARCH_HOME],
+                                 stderr=subprocess.PIPE)
         except:
-            print("Could not create {}".format(BLACKARCH_CONFIG))
+            print("Could not create {}".format(BLACKARCH_HOME))
             print(err.stderr.decode('utf-8'))
-            ret = EXIT_FAILURE
+            return EXIT_FAILURE
 
-    return ret
+    return EXIT_SUCCESS
 
 
 def get_pkgbuild_files():
@@ -106,15 +106,14 @@ def get_pkgbuild_files():
     return:
         0 if cloning was successful, 1 else
     """
-    ret = EXIT_SUCCESS
     try:
         err = subprocess.run(['git', 'clone', BLACKARCH_REPO, LOCAL_REPO],
                              stderr=subprocess.PIPE)
     except:
         print("Could not clone {}".format(BLACKARCH_REPO))
         print(err.stderr.decode('utf-8'))
-        ret = EXIT_FAILURE
-    return ret
+        return EXIT_FAILURE
+    return EXIT_SUCCESS
 
 
 def get_dependecies(pkg, path=BLACKARCH_REPO):
@@ -186,7 +185,6 @@ def list_groups():
     """
     Print all BlackArch Linux groups
     """
-    ret = EXIT_SUCCESS
     try:
         p = subprocess.run(['pacman', '-Sg', '|', 'grep', 'blackarch'],
                            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -194,11 +192,9 @@ def list_groups():
     except:
         print("Something went wrong fetching BlackArch groups")
         print(err)
-        ret = EXIT_FAILURE
+        return EXIT_FAILURE
 
-    return ret
-
-
+    return EXIT_SUCCESS
 
 
 def parse_arguments():
@@ -208,7 +204,6 @@ def parse_arguments():
     return:
         args(dict) - dict of command line options
     """
-
     ap = argparse.ArgumentParser()
 
     # package options
@@ -251,27 +246,41 @@ def parse_arguments():
     return args
 
 
-def handle_args(args):
+def handle_args(args, config):
     """
     Handle command line arguments
 
     Arguments:
         args(dict) - command line arguments dictionary
+        config(ConfigParser) - configr Parser config
     """
 
-    print(args)
-    if args['default']:
-        write_to_config('repo_path', args['default'])
+    cfg = open(BLACKARCH_CONFIG, 'w')
 
+    print(args)
+    if args['version']:
+        print("You are using version {} of blackman".format(VERSION))
+        sys.exit(EXIT_SUCCESS)
+
+    if args['default']:
+        if config.has_section('blackman'):
+            config.set('blackman', 'general_repo_location', args['default'])
+        else:
+            config.add_section('blackman')
+            config.set('blackman', 'general_repo_location', args['default'])
+
+    config.write(cfg)
+    cfg.close()
 
 
 def main():
     """
     main function of blackman
     """
+    config = configparser.ConfigParser()
     create_config_dir()
     args = parse_arguments()
-    handle_args(args)
+    handle_args(args, config)
 
 
 if __name__ == "__main__":
