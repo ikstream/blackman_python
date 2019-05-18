@@ -9,7 +9,9 @@ Download and compile packages from BlackArch github repo
 #  Blackman - Emerge for BlackArch
 #
 #  Copyright (C) 2019  BlackArch Linux
-#  Copyright (C) 2019  Stefan Venz
+#
+#  Author: Stefan Venz
+#
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -38,6 +40,7 @@ import configparser
 import os
 import subprocess
 import sys
+import package.package
 
 from pathlib import Path
 
@@ -70,8 +73,8 @@ def check_config_dir():
     try:
         if os.path.exists(BLACKARCH_CONFIG):
             return EXIT_SUCCESS
-        else:
-            return  EXIT_FAILURE
+
+        return  EXIT_FAILURE
     except:
         print("Could not check if {} exists".format(BLACKARCH_CONFIG))
         return EXIT_FAILURE
@@ -116,24 +119,6 @@ def get_pkgbuild_files():
     return EXIT_SUCCESS
 
 
-def get_dependecies(pkg, path=BLACKARCH_REPO):
-    """
-    Get a list of dependencies for pkg
-
-    Arguments:
-        pkg(str) - package to be build
-        path(str) - path to config
-
-    Return:
-        dep(list) - list of deo
-    """
-    pkg_build = path + 'packages/' + pkg + 'PKGBUILD'
-    try:
-        with open(pkg_build):
-            print('read dependencies here')
-    except:
-        print("Could not open {}".format(pkg_build))
-
 
 def read_from_config():
     """
@@ -164,34 +149,16 @@ def write_to_config(name, value):
     return EXIT_SUCCESS
 
 
-def is_in_blackarch(pkg):
-    """
-    check if a given package is in BlackArch Repo
-
-    Arguments:
-        pkg(str) - package to check
-
-    Returns:
-        True if in BlackArch, False72 0000 else
-    """
-    output = subprocess.getoutput('pacman -Ss ' + pkg).split('/')
-    if output[0] == 'blackarch':
-        return True
-
-    return False
-
-
 def list_groups():
     """
     Print all BlackArch Linux groups
     """
     try:
         p = subprocess.run(['pacman', '-Sg', '|', 'grep', 'blackarch'],
-                           stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        err = p.communicate()
+                           stdout=subprocess.STDOUT, stderr=subprocess.STDOUT)
+        print(p.returncode)
     except:
         print("Something went wrong fetching BlackArch groups")
-        print(err)
         return EXIT_FAILURE
 
     return EXIT_SUCCESS
@@ -268,6 +235,7 @@ def handle_args(args, config):
         else:
             config.add_section('blackman')
             config.set('blackman', 'general_repo_location', args['default'])
+
 
     config.write(cfg)
     cfg.close()
