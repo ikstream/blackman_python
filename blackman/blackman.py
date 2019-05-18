@@ -154,12 +154,15 @@ def list_groups():
     Print all BlackArch Linux groups
     """
     try:
-        p = subprocess.run(['pacman', '-Sg', '|', 'grep', 'blackarch'],
-                           stdout=subprocess.STDOUT, stderr=subprocess.STDOUT)
-        print(p.returncode)
+        p = subprocess.run(['pacman', '-Sg'],
+                           stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     except:
         print("Something went wrong fetching BlackArch groups")
         return EXIT_FAILURE
+
+    for group in  p.stdout.decode('utf8').split('\n'):
+        if 'blackarch' in group:
+            print(group)
 
     return EXIT_SUCCESS
 
