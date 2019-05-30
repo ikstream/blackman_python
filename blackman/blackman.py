@@ -48,7 +48,7 @@ VERSION = '0.1'
 
 HOME = str(Path.home())
 BLACKARCH_REPO = 'https://github.com/BlackArch/blackarch.git'
-BLACKARCH_HOME = HOME + '/.config/blackman/'
+BLACKARCH_HOME = HOME + '/.config/blackman'
 BLACKARCH_CONFIG = BLACKARCH_HOME + '/config'
 
 LOCAL_REPO = BLACKARCH_HOME + '/repo'
